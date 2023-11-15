@@ -11,6 +11,6 @@ while True:
         break   
 
     elif r < a:
-        print('suurem')
-    else:
         print('väiksem')
+    else:
+        print('suurem')
