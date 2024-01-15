@@ -1,50 +1,56 @@
 import praw
-import credentials
+import matplotlib.pyplot as plt
+from collections import Counter
+
 
 reddit = praw.Reddit(
-    client_id= credentials.client_id,
-    client_secret= credentials.client_secret,
-    user_agent="python3:Kennu156:0.1 (by u/Kennu156)",
+    client_id='tmNtAvAgBjdEatlWk2PnWw',
+    client_secret='NGaJwqso_109dVX3tlMIE-Z1aVBSAw',
+    user_agent="python3:Kennu156:0.1 (by u/Kennu156)"
 )
 
+subreddit_name = 'eesti'
 
-for submission in reddit.subreddit("Eesti").top(limit=10):
-    print(submission.title)
+# leiab subredditist 10 kõige populaarsemat postitust
+subreddit = reddit.subreddit(subreddit_name)
+hot_posts = subreddit.hot(limit=10)
 
-import praw
+# salvestab sõnade sagedust
+word_counter = Counter()
 
-reddit = praw.Reddit(
-   client_id= 'tmNtAvAgBjdEatlWk2PnWw',
-  client_secret= 'NGaJwqso_109dVX3tlMIE-Z1aVBSAw',
-    user_agent="python3:Kennu156:0.1 (by u/Kennu156)",
-)
-subreddit = reddit.subreddit('Eesti')
+# arv sõnu kõigis kommentaarides
+total_words = 0
 
-words = []
+# loop läbi postituste pealkirjade ja kommentaaride
+for post in hot_posts:
+    # Töötle pealkirja
+    title_words = post.title.lower().split()
+    word_counter.update(title_words)
+    total_words += len(title_words)
 
-for submission in subreddit.hot(limit = 2):
-    submission.comments.replace_more(limit=0)
-    for top_level_comment in submission.comments:
-        word = ""
-        for letter in top_level_comment.body:
-            if(letter == " "):
-                #if(word and not word[-1].isalnum()):
-                 #   word = word[:-1]
-                #if not word in commonWords:
-                words.append(word)
-                word = ''
-            else:
-                word += letter
-        
-wordCount = {}
+    # Töötle kommentaare
+    post.comments.replace_more(limit=None)
+    for comment in post.comments.list():
+        comment_words = comment.body.lower().split()
+        word_counter.update(comment_words)
+        total_words += len(comment_words)
 
-for word in words:
-    if word in wordCount:
-        wordCount[word] += 1
-    else:
-        wordCount[word] = 1
-    
 
-print(wordCount)
-    
-        
+common_words = word_counter.most_common(10)
+
+# Leiab ja prindib sõnade protsendid
+
+print("10 enim kasutatud sõnad subredditis r/eesti:")
+for word, count in common_words:
+    percentage = (count / total_words) * 100
+    print("{}: {:.1f}%".format(word, percentage))
+
+plt.bar([word[0] for word in common_words], [(word[1] / total_words) * 100 for word in common_words])
+plt.xlabel('Words')
+plt.ylabel('Percentage')
+plt.title(subreddit_name)
+plt.xticks(rotation=45, ha='right')
+plt.tight_layout()
+
+plt.show()
+
