@@ -15,7 +15,7 @@ subreddit_name = 'eesti'
 subreddit = reddit.subreddit(subreddit_name)
 hot_posts = subreddit.hot(limit=10)
 
-# salvestab sõnade sagedust
+# loeb sõnade sagedust
 word_counter = Counter()
 
 # arv sõnu kõigis kommentaarides
@@ -45,12 +45,13 @@ for word, count in common_words:
     percentage = (count / total_words) * 100
     print("{}: {:.1f}%".format(word, percentage))
 
-plt.bar([word[0] for word in common_words], [(word[1] / total_words) * 100 for word in common_words])
-plt.xlabel('Words')
-plt.ylabel('Percentage')
+labels = [word[0] for word in common_words]
+sizes = [(word[1] / total_words) * 100 for word in common_words]
+explode = (0.1, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+
+plt.pie(sizes, labels=labels, autopct='%1.1f%%',explode=explode, startangle=90)
+plt.axis('equal')
 plt.title(subreddit_name)
-plt.xticks(rotation=45, ha='right')
-plt.tight_layout()
+
 
 plt.show()
-
