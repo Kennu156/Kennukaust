@@ -25,9 +25,9 @@ age = int(input('Kui vana sa oled? '))
 time.sleep(random.randrange(2, 5))
 
 if age < 18:
-    print('Smösh')
+    print('Sa oled alaealine')
 else:
-    print('Pöss')
+    print('Sa ei ole alaealine')
 
 area = input('Kus sa sündinud oled?')
 time.sleep(random.randrange(2, 5))
